@@ -33,6 +33,13 @@ class WatiController extends Controller
             return response()->json(['status' => 'error', 'message' => 'No waId provided'], 400);
         }
 
+        // Restrict access to a specific phone number
+        $allowedPhoneNumber = env('ALLOWED_PHONE_NUMBER');
+        if ($allowedPhoneNumber && $waId !== $allowedPhoneNumber) {
+            Log::info("Access denied for phone number: $waId");
+            return response()->json(['status' => 'success', 'message' => 'Access denied']);
+        }
+
         if ($type === 'text' || $request->has('text')) {
             $this->processMessage($waId, $text);
         }
